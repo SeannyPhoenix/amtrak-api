@@ -2,26 +2,34 @@
   "name": "@mgwalker/amtrak-api",
   "license": "ISC",
   "type": "module",
-  "devDependencies": {
-    "eslint": "^8.53.0",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-plugin-import": "^2.29.0",
-    "prettier": "^3.0.3",
-    "sinon": "^17.0.1",
-    "tap": "^18.5.7"
-  },
-  "prettier": {},
   "dependencies": {
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "handlebars": "^4.7.8"
   },
+  "devDependencies": {
+    "@types/node": "^20.8.0",
+    "@types/sinon": "^17.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "eslint": "^8.53.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.29.0",
+    "prettier": "^3.0.3",
+    "sinon": "^17.0.1",
+    "tap": "^18.5.7",
+    "tsx": "^4.0.0",
+    "typescript": "^5.2.0"
+  },
   "scripts": {
-    "site": "npm run update && node src/site/build.js",
-    "update": "rm -rf _site && node src/data/main.js",
-    "test:lint": "eslint 'src/**/*.js'",
-    "test:test": "tap 'src/**/*.test.js' --coverage-report lcov --allow-incomplete-coverage",
+    "build": "tsc",
+    "site": "npm run update && tsx src/site/build.ts",
+    "update": "rm -rf _site && tsx src/data/main.ts",
+    "test:lint": "eslint 'src/**/*.{js,ts}'",
+    "test:test": "tap 'src/**/*.test.{js,ts}' --coverage-report lcov --allow-incomplete-coverage",
     "test": "npm run test:lint && npm run test:test"
   }
 }

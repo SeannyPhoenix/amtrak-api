@@ -7,7 +7,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export const getTimezoneFromCharacter = (tzIn) => {
+export const getTimezoneFromCharacter = (tzIn: string): string => {
   // The API returns timezones as single characters. I've only encountered the
   // four primary continental US timezones. The continental part makes sense
   // because these are trains, after all, but this doesn't account for all the
@@ -26,7 +26,7 @@ export const getTimezoneFromCharacter = (tzIn) => {
   }
 };
 
-export const parseDate = (uglyDate, tz = "America/New_York") => {
+export const parseDate = (uglyDate: string | null | undefined, tz: string = "America/New_York"): string | null => {
   if (!uglyDate) {
     return null;
   }

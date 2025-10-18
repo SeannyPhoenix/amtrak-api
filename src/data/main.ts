@@ -1,8 +1,9 @@
 import defaultFs from "node:fs/promises";
-import { getStations as defaultGetStations } from "./stations.js";
-import { getTrains as defaultGetTrains } from "./trains.js";
+import { getStations as defaultGetStations } from "./stations";
+import { getTrains as defaultGetTrains } from "./trains";
+import type { MainDependencies, Route } from "../types";
 
-const slugify = (str) =>
+const slugify = (str: string): string =>
   str
     .toLowerCase()
     .trim()
@@ -14,7 +15,7 @@ export const main = async ({
   fs = defaultFs,
   getStations = defaultGetStations,
   getTrains = defaultGetTrains,
-} = {}) => {
+}: MainDependencies = {}): Promise<void> => {
   const stations = await getStations();
   const trains = await getTrains(stations ?? []);
 
@@ -26,7 +27,7 @@ export const main = async ({
   if (trains) {
     await fs.writeFile("_site/trains.json", JSON.stringify(trains));
 
-    const routes = Array.from(new Set(trains.map(({ route }) => route)))
+    const routes: Route[] = Array.from(new Set(trains.map(({ route }) => route)))
       .map((routeName) => ({
         route: routeName,
         trains: trains.filter(({ route }) => route === routeName),

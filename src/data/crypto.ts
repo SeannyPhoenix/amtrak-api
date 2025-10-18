@@ -1,17 +1,18 @@
 import { createDecipheriv, pbkdf2Sync } from "node:crypto";
+import type { CryptoInitializers, FetchFunction } from "../types";
 
-let cryptoInitializers = false;
+let cryptoInitializers: CryptoInitializers | false = false;
 
 // The public key (used to encrypt private key passwords), key derivation salt,
 // and AES initialization vectors are all provided by the API. Fetch them.
-export const getCryptoInitializers = async (fetch = global.fetch) => {
+export const getCryptoInitializers = async (fetch: FetchFunction = global.fetch): Promise<CryptoInitializers> => {
   if (cryptoInitializers === false) {
     // First, the index of the public key is the sum of all zoom levels for all
     // routes, so let's get that real quick.
     const masterZoom = await fetch(
       "https://maps.amtrak.com/rttl/js/RoutesList.json",
     )
-      .then((r) => r.json())
+      .then((r: Response) => r.json() as Promise<Array<{ ZoomLevel?: number }>>)
       .then((list) =>
         list.reduce((sum, { ZoomLevel }) => sum + (ZoomLevel ?? 0), 0),
       );
@@ -19,7 +20,11 @@ export const getCryptoInitializers = async (fetch = global.fetch) => {
     // Then fetch the data containing our values.
     const cryptoData = await fetch(
       "https://maps.amtrak.com/rttl/js/RoutesList.v.json",
-    ).then((r) => r.json());
+    ).then((r: Response) => r.json()) as {
+      arr: string[];
+      s: string[];
+      v: string[];
+    };
 
     // And pull them out.
     cryptoInitializers = {
@@ -38,7 +43,7 @@ export const getCryptoInitializers = async (fetch = global.fetch) => {
 // comes out to 88 bytes. And that's where this number comes from.
 const MASTER_SEGMENT = 88;
 
-export const decrypt = async (data, keyDerivationPassword) => {
+export const decrypt = async (data: string, keyDerivationPassword?: string): Promise<string> => {
   const { PUBLIC_KEY, CRYPTO_SALT, CRYPTO_IV } = await getCryptoInitializers();
 
   // The content is base64 encoded, so decode that to binary first.
@@ -48,7 +53,7 @@ export const decrypt = async (data, keyDerivationPassword) => {
   // the API and PBKDF2 with SHA1, with 1,000 iterations and a 16-byte output.
   const key = pbkdf2Sync(
     keyDerivationPassword ?? PUBLIC_KEY,
-    CRYPTO_SALT,
+    CRYPTO_SALT as any,
     1_000,
     16,
     "sha1",
@@ -56,18 +61,18 @@ export const decrypt = async (data, keyDerivationPassword) => {
 
   // It's encrypted with AES-128-CBC using the generated key above and the
   // hardcoded initialization vector.
-  const decipher = createDecipheriv("aes-128-cbc", key, CRYPTO_IV);
+  const decipher = createDecipheriv("aes-128-cbc", key as any, CRYPTO_IV as any);
 
   // The Node library works in chunks, so we'll get some stuff out as soon as we
   // update the decipher, and we have to get the rest out by calling .final().
   // The result is a string either way, so just join the array of results at the
   // end and be happy.
-  const text = [decipher.update(ciphertext, "binary", "utf-8")];
-  text.push(decipher.final("utf-8"));
+  const text: string[] = [decipher.update(ciphertext as any, "binary", "utf-8")];
+  text.push(decipher.final("utf-8") as string);
   return text.join("");
 };
 
-export const parse = async (data) => {
+export const parse = async (data: string): Promise<unknown> => {
   // The encrypted data is at the beginning. The last 88 bytes are the base64
   // encoded private key password. Slice those two out.
   const ciphertext = data.slice(0, -MASTER_SEGMENT);

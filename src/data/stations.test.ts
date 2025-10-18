@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import tap from "tap";
 
-import { getStations } from "./stations.js";
+import { getStations } from "./stations";
 
 tap.test("stations fetcher", async (stationTests) => {
   const fetch = sinon.stub();
@@ -90,7 +90,7 @@ tap.test("stations fetcher", async (stationTests) => {
       },
     });
 
-    const out = await getStations({ fetch, cryptoParse });
+    const out = await getStations({ fetch: fetch as unknown as typeof global.fetch, cryptoParse });
     test.same(out, [
       {
         code: "STA1",

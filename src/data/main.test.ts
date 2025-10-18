@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import tap from "tap";
 
-import { main } from "./main.js";
+import { main } from "./main";
 
 const sandbox = sinon.createSandbox();
 
@@ -10,7 +10,7 @@ tap.test("main module", async (t) => {
   const getStations = sandbox.stub();
   const getTrains = sandbox.stub();
 
-  t.beforeEach(async () => {});
+  t.beforeEach(async () => { });
 
   t.afterEach(() => {
     sandbox.restore();
@@ -54,7 +54,7 @@ tap.test("main module", async (t) => {
       { route: "Route 4", trains: [{ id: 8, number: 30, route: "Route 4" }] },
     ];
 
-    await main({ fs, getStations, getTrains });
+    await main({ fs: fs as unknown as typeof import('node:fs/promises'), getStations, getTrains });
 
     t.ok(fs.mkdir.calledWith("_site/routes", { recursive: true }));
     t.ok(

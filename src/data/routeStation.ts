@@ -1,9 +1,10 @@
-import { getTimezoneFromCharacter, parseDate } from "./date.js";
+import { getTimezoneFromCharacter, parseDate } from "./date";
+import type { RouteStation, RawStationData } from "../types";
 
-export const parseRouteStation = (routeStation, first = false) => {
+export const parseRouteStation = (routeStation: RawStationData, first: boolean = false): RouteStation => {
   const timezone = getTimezoneFromCharacter(routeStation.tz);
 
-  const station = {
+  const station: RouteStation = {
     code: routeStation.code,
     bus: routeStation.bus,
     arrivalActual: null,
@@ -12,7 +13,7 @@ export const parseRouteStation = (routeStation, first = false) => {
     departureActual: null,
     departureEstimated: null,
     departureScheduled: null,
-    status: null,
+    status: 'scheduled', // Default value, will be updated below
     timezone,
   };
 

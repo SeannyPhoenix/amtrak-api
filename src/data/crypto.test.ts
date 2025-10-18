@@ -1,7 +1,7 @@
 import sinon from "sinon";
 import tap from "tap";
 
-import { getCryptoInitializers, parse } from "./crypto.js";
+import { getCryptoInitializers, parse } from "./crypto";
 
 tap.test("crypto utilities", async (cryptoTests) => {
   const fetch = sinon.stub();
@@ -39,7 +39,7 @@ tap.test("crypto utilities", async (cryptoTests) => {
       PUBLIC_KEY: key,
       CRYPTO_SALT: salt,
       CRYPTO_IV: iv,
-    } = await getCryptoInitializers(fetch);
+    } = await getCryptoInitializers(fetch as unknown as typeof global.fetch);
 
     test.same(key, "0b1d2897-640a-4c64-a1d8-b54f453a7ad7");
     test.same(salt.toString("hex"), "deadbeef");

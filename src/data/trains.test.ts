@@ -1,8 +1,9 @@
 import sinon from "sinon";
 import tap from "tap";
-import { enroute, enrouteArrived, scheduled } from "./trains.test.data.js";
+import { enroute, enrouteArrived, scheduled } from "./trains.test.data";
 
-import { getTrains } from "./trains.js";
+import { getTrains } from "./trains";
+import { StationMetadata } from "../types";
 
 tap.test("trains fetcher", async (trainTests) => {
   const fetch = sinon.stub();
@@ -70,10 +71,10 @@ tap.test("trains fetcher", async (trainTests) => {
 
     const out = await getTrains(
       [
-        { code: "STA1", station: "station 1 metadata" },
-        { code: "STA2", station: "station 2 metadata" },
-        { code: "STA3", station: "station 3 metadata" },
-      ],
+        { code: "STA1", station: "station 1 metadata" } as unknown,
+        { code: "STA2", station: "station 2 metadata" } as unknown,
+        { code: "STA3", station: "station 3 metadata" } as unknown,
+      ] as StationMetadata[],
       { fetch, cryptoParse },
     );
 
@@ -171,12 +172,12 @@ tap.test("trains fetcher", async (trainTests) => {
 
       const out = await getTrains(
         [
-          { code: "STA1", station: "station 1 metadata" },
-          { code: "STA2", station: "station 2 metadata" },
-          { code: "STA3", station: "station 3 metadata" },
-          { code: "STA4", station: "station 4 metadata" },
-        ],
-        { fetch, cryptoParse },
+          { code: "STA1", station: "station 1 metadata" } as unknown,
+          { code: "STA2", station: "station 2 metadata" } as unknown,
+          { code: "STA3", station: "station 3 metadata" } as unknown,
+          { code: "STA4", station: "station 4 metadata" } as unknown,
+        ] as StationMetadata[],
+        { fetch, cryptoParse }
       );
 
       test.same(out, [
@@ -299,11 +300,9 @@ tap.test("trains fetcher", async (trainTests) => {
           { code: "STA3", station: "station 3 metadata" },
           { code: "STA4", station: "station 4 metadata" },
           { code: "STA5", station: "station 5 metadata" },
-        ],
+        ] as unknown as StationMetadata[],
         { fetch, cryptoParse },
-      );
-
-      test.same(out, [
+      ); test.same(out, [
         {
           id: "train 2",
           heading: "ns",

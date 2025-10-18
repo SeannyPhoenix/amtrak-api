@@ -1,21 +1,42 @@
 {
-  "extends": ["airbnb-base", "prettier"],
+  "extends": [
+    "airbnb-base",
+    "prettier"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2023,
+    "project": "./tsconfig.json"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "rules": {
-    // Node.js requires that import statements include a file extension in order
-    // to properly resolve modules, similarly to how it works in browser
-    // environments. In fact, the only places it doesn't work that way is with
-    // precompilers like Babel, etc.
-    "import/extensions": ["error", "always"],
-
+    // Allow extensionless imports for TypeScript files since TypeScript
+    // and the import resolver can handle module resolution.
+    "import/extensions": [
+      "error",
+      "never",
+      {
+        "js": "never",
+        "ts": "never",
+        "json": "always"
+      }
+    ],
     // This rule says that a file with a single export should only export
     // default, a rule I generally disagree with being in the linter because
     // what to export is contextual. There's not a good hard rule.
-    "import/prefer-default-export": [0],
-
+    "import/prefer-default-export": [
+      0
+    ],
     // In general, I agree with this rule, but treating parameters as immutable
     // is a bridge too far for me.
-    "no-param-reassign": ["error", { "props":false }],
-
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
     // This rule is copied from the Airbnb config, but we remove the prohibition
     // on ForOf statements because they are natively supported in Node.js. The
     // remaining prohibitions are still good, though, so we don't want to just
@@ -24,24 +45,43 @@
       "error",
       {
         "selector": "ForInStatement",
-        "message":
-          "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+        "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
       },
       {
         "selector": "LabeledStatement",
-        "message":
-          "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+        "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
       },
       {
         "selector": "WithStatement",
-        "message":
-          "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+        "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+      }
+    ],
+    // TypeScript-specific rules
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    // Allow console statements for this project
+    "no-console": "off",
+    // Allow devDependencies in test files
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.test.*",
+          "**/*.config.*"
+        ]
       }
     ]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
   },
   "env": {
     "es2023": true,
     "node": true
-  },
-  "parserOptions": { "ecmaVersion": 2023 }
+  }
 }

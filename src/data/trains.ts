@@ -1,17 +1,18 @@
-import { parse } from "./crypto.js";
-import { parseRouteStation } from "./routeStation.js";
+import { parse } from "./crypto";
+import { parseRouteStation } from "./routeStation";
+import type { Train, StationMetadata, GetTrainsDependencies, RawTrainsApiResponse, RawStationData } from "../types";
 
 export const getTrains = async (
-  allStationMetadata,
-  { fetch = global.fetch, cryptoParse = parse } = {},
-) => {
+  allStationMetadata: StationMetadata[],
+  { fetch = global.fetch, cryptoParse = parse }: GetTrainsDependencies = {},
+): Promise<Train[]> => {
   // Fetch the train data. This is an encrypted blob.
   const rawData = await fetch(
     "https://maps.amtrak.com/services/MapDataService/trains/getTrainsData",
-  ).then((response) => response.text());
+  ).then((response: Response) => response.text());
 
   // Decrypt all in one swoop.
-  const trains = await cryptoParse(rawData);
+  const trains: RawTrainsApiResponse = (await cryptoParse(rawData)) as RawTrainsApiResponse;
 
   // Now clean up the train data.
   return (
@@ -36,7 +37,7 @@ export const getTrains = async (
             // So the station metadata is string-encoded JSON. Which I guess means
             // it was double encoded, since the containing object was also string-
             // encoded JSON. Shrugging-person-made-of-symbols.
-            const stationData = JSON.parse(train[stationKey]);
+            const stationData: RawStationData = JSON.parse(train[stationKey]);
             return {
               // This function takes care of figuring out whether the train is
               // scheduled, arrived, enroute, or departed. It also turns all the
@@ -100,7 +101,7 @@ export const getTrains = async (
           .forEach((key) => delete train[key]);
 
         // And build our cleaned up train object. Also keep the raw data.
-        const newTrain = {
+        const newTrain: Train = {
           id: train.ID,
           heading: train.Heading,
           number: +train.TrainNum,

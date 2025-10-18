@@ -1,16 +1,17 @@
-import { parse } from "./crypto.js";
+import { parse } from "./crypto";
+import type { StationMetadata, GetStationsDependencies, RawStationsApiResponse } from "../types";
 
 export const getStations = async ({
   cryptoParse = parse,
   fetch = global.fetch,
-} = {}) => {
+}: GetStationsDependencies = {}): Promise<StationMetadata[]> => {
   // Fetch the raw data.
   const rawData = await fetch(
     "https://maps.amtrak.com/services/MapDataService/stations/trainStations",
-  ).then((response) => response.text());
+  ).then((response: Response) => response.text());
 
   // Decrypt it.
-  const stations = await cryptoParse(rawData);
+  const stations: RawStationsApiResponse = await cryptoParse(rawData) as RawStationsApiResponse;
 
   // Sometimes Amtrak tells the GitHub action that it's not allowed to access
   // the site. Perhaps they're shutting this API down because they're not happy
@@ -35,5 +36,5 @@ export const getStations = async ({
       zip: station.Zipcode,
       _raw: station,
     }),
-  );
+  ) ?? [];
 };

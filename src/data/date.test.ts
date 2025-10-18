@@ -1,6 +1,6 @@
 import tap from "tap";
 
-import { getTimezoneFromCharacter, parseDate } from "./date.js";
+import { getTimezoneFromCharacter, parseDate } from "./date";
 
 tap.test("date utilities", async (dateTests) => {
   dateTests.test("get timezone from a character", async (tzCharTests) => {
@@ -34,7 +34,7 @@ tap.test("date utilities", async (dateTests) => {
     "parse ugly Amtrak date into ISO8601 strings",
     async (parseTests) => {
       parseTests.test("handles falsey dates", async (test) => {
-        const actual = parseDate(false);
+        const actual = parseDate(null);
         test.same(actual, null);
       });
 
